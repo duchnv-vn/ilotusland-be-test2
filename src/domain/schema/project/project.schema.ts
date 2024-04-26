@@ -1,17 +1,25 @@
 import { Schema } from 'mongoose';
-import { ProjectStage } from '../../type/projectStage.type';
-import { ProjectRequestType } from '../../type/projectRequestType.type';
 
 export const ProjectSchema = new Schema(
   {
     _id: Number,
     logoUrl: String,
     stages: {
-      type: [ProjectStage],
+      type: [
+        {
+          id: Number,
+          name: String,
+        },
+      ],
       default: undefined,
     },
     requestTypes: {
-      type: [ProjectRequestType],
+      type: [
+        {
+          id: Number,
+          name: String,
+        },
+      ],
       default: undefined,
     },
   },

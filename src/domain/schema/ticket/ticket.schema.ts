@@ -1,7 +1,6 @@
 import { Schema } from 'mongoose';
 import { ModelName } from '../../../common/constants';
 import { TicketPriority } from '../../enum/ticket-priority';
-import { TicketAttachedFile } from '../../type/ticketAttachedFile.type';
 
 export const TicketSchema = new Schema(
   {
@@ -43,7 +42,13 @@ export const TicketSchema = new Schema(
     timeTracking: Number,
     dueDate: Number,
     attachedFiles: {
-      type: [TicketAttachedFile],
+      type: [
+        {
+          name: String,
+          type: String,
+          url: String,
+        },
+      ],
       default: undefined,
     },
     createdBy: {
