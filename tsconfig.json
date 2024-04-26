@@ -16,5 +16,9 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "exclude": [
+    "dist",
+    "**/*.spec.ts"
+  ]
 }
