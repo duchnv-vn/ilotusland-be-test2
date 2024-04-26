@@ -18,7 +18,6 @@
     "noFallthroughCasesInSwitch": false
   },
   "exclude": [
-    "dist",
-    "**/*.spec.ts"
+    "dist"
   ]
 }
