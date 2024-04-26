@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:e2e:ci": "npm run test:e2e --detectOpenHandles --verbose --ci",
     "test:ci": "jest --detectOpenHandles --verbose --ci",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy:preview": "bash scripts/deploy-preview.sh",
+    "deploy:prod": "bash scripts/deploy-prod.sh"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

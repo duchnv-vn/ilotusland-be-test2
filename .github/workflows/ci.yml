@@ -2,10 +2,6 @@ name: CI Test
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: Core version (default latest)
-        default: "latest"
   push:
     branches:
       - feat/**
