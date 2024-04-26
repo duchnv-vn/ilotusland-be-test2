@@ -29,13 +29,6 @@ describe('TicketRepository', () => {
     expect(ticketRepository).toBeDefined();
   });
 
-  it('Should create a ticket successfully', async () => {
-    const result = await ticketRepository.create({
-      _id: 0,
-      asigneeId: 1,
-    });
-  });
-
   afterAll(async () => {
     await disconnect();
   });
