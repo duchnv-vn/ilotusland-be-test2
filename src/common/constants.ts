@@ -1,9 +1,17 @@
 export const DATABASE_CONNECTION = Symbol('DATABASE_CONNECTION');
 
 export enum ModelName {
-  TICKET = 'TICKET_MODEL',
+  TICKET = 'TICKET',
+  COMPANY = 'COMPANY',
+  CUSTOMER = 'CUSTOMER',
+  PROJECT = 'PROJECT',
+  USER = 'USER',
 }
 
 export enum CollectionName {
-  TICKET_MODEL = 'tickets',
+  TICKET = 'tickets',
+  COMPANY = 'companies',
+  CUSTOMER = 'customers',
+  PROJECT = 'projects',
+  USER = 'users',
 }
