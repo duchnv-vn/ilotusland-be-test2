@@ -9,7 +9,7 @@ module.exports = {
     'docs',
     'refactor',
     'style',
-    'cicd',
+    'ci-cd',
     'perf',
   ],
   maxMessageLength: 64,
@@ -38,7 +38,7 @@ module.exports = {
       emoji: '♻️',
       value: 'chore',
     },
-    cicd: {
+    'ci-cd': {
       description: 'Changes to our CI/CD configuration files and scripts',
       emoji: '🤖',
       value: 'ci-cd',
