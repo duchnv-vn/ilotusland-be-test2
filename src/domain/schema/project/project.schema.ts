@@ -9,6 +9,7 @@ export const ProjectSchema = new Schema(
         {
           id: Number,
           name: String,
+          order: Number,
         },
       ],
       default: undefined,
