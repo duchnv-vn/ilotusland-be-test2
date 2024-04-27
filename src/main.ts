@@ -8,6 +8,7 @@ import {
   AUTH0_TOKEN_SIGN_ALG,
   PORT,
 } from './configs/envs';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +32,8 @@ async function bootstrap() {
   });
 
   app.use(jwtCheck);
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   await app.listen(PORT);
 }

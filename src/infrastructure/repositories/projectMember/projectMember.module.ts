@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongodbModule } from '../../database/database.module';
-import { CollectionName, ModelName } from '../../../common/constants';
+import { CollectionName, ModelName } from '../../../common/enum/collection';
 import { ProjectMemberRepository } from './projectMember.repository';
 import { ProjectMemberSchema } from '../../../domain/schema/projectMember/projectMember.schema';
 

@@ -88,4 +88,9 @@ export class BaseRepository<M extends IBaseSchemaCommon>
     await this.model.deleteMany({ _id: { $in: ids } });
     return true;
   }
+
+  async checkExistBy(condition: Partial<M>): Promise<boolean> {
+    const result = await this.model.countDocuments(condition);
+    return result > 0;
+  }
 }

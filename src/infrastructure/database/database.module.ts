@@ -3,7 +3,8 @@ import { Module } from '@nestjs/common/decorators/modules/module.decorator';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { connect, model } from 'mongoose';
 import { MongoDatabase } from './database.type';
-import { CollectionName, DATABASE_CONNECTION } from '../../common/constants';
+import { DATABASE_CONNECTION } from '../../common/constants';
+import { CollectionName } from '../../common/enum/collection';
 
 @Module({})
 export class MongodbModule {
