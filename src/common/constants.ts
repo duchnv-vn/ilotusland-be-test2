@@ -6,6 +6,7 @@ export enum ModelName {
   CUSTOMER = 'CUSTOMER',
   PROJECT = 'PROJECT',
   USER = 'USER',
+  PROJECT_MEMBER = 'PROJECT_MEMBER',
 }
 
 export enum CollectionName {
@@ -14,4 +15,7 @@ export enum CollectionName {
   CUSTOMER = 'customers',
   PROJECT = 'projects',
   USER = 'users',
+  PROJECT_MEMBER = 'projectMembers',
 }
+
+export const IS_PUBLIC_KEY = 'isPublic';
