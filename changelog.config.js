@@ -31,6 +31,7 @@ module.exports = {
     'domain',
     'presentation',
     'config',
+    'release',
   ],
   types: {
     chore: {

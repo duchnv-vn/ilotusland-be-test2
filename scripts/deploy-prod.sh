@@ -16,6 +16,6 @@ echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" >dist
 
 vercel --prod \
     ./dist \
-    --local-config=vercel.json \
+    -A "vercel.json" \
     -e MONGODB_URI=$MONGODB_URI \
-    --token=$VERCEL_TOKEN
+    -t "$VERCEL_TOKEN"
