@@ -2,47 +2,78 @@ import {
   Controller,
   Get,
   Body,
-  Patch,
   Param,
   UseGuards,
   Res,
   Put,
   UseInterceptors,
+  Query,
+  InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { TicketService } from './ticket.service';
-import { UpdateTicketDto } from './dto/update-ticket.dto';
+import {
+  UpdateTicketBodyDto,
+  UpdateTicketParamsDto,
+} from './dto/update-ticket.dto';
 import { AuthGuard } from '../../presentation/guards/auth.guard';
 import { ResponseInterceptor } from '../../presentation/interceptors/response.interceptor';
+import { FindTicketsByProjectIdQueryDto } from './dto/find-tickets-by-project-id.dto';
+import { LoggerService } from '../../infrastructure/logger/logger.service';
 
 @Controller('tickets')
 @UseInterceptors(ResponseInterceptor)
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(
+    private readonly ticketService: TicketService,
+    private readonly logger: LoggerService,
+  ) {}
 
   @Get()
   @UseGuards(AuthGuard)
-  findAll(@Res() res: Response) {
-    return { message: 'hello world' };
-  }
-
-  @Patch(':id')
-  @UseGuards(AuthGuard)
-  patchUpdate(
-    @Param('id') id: string,
-    @Body() updateTicketDto: UpdateTicketDto,
-    @Res() res,
-  ) {
-    return;
-  }
-
-  @Put(':id')
-  @UseGuards(AuthGuard)
-  update(
-    @Param('id') id: string,
-    @Body() updateTicketDto: UpdateTicketDto,
+  async findByProjectId(
+    @Query() { projectId }: FindTicketsByProjectIdQueryDto,
     @Res() res: Response,
   ) {
-    return;
+    try {
+      const tickets = await this.ticketService.findManyByProjectId(projectId);
+      return { tickets };
+    } catch (error) {
+      this.logger.log('ticketController.findByProjectId');
+      this.logger.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Put(':projectId/:ticketId')
+  @UseGuards(AuthGuard)
+  async update(
+    @Param() { projectId, ticketId }: UpdateTicketParamsDto,
+    @Body() updateTicketDto: UpdateTicketBodyDto,
+    @Res() res: Response,
+  ) {
+    const { asigneeId, reporterId, requestTypeId, stageId } = updateTicketDto;
+
+    try {
+      const errorMessage = await this.ticketService.validateUpdatePayload({
+        projectId,
+        ticketId,
+        asigneeId,
+        reporterId,
+        requestTypeId,
+        stageId,
+      });
+      if (!!errorMessage) {
+        throw new BadRequestException(errorMessage);
+      }
+
+      const result = await this.ticketService.update(ticketId, updateTicketDto);
+      return result;
+    } catch (error) {
+      this.logger.log('ticketController.update');
+      this.logger.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 }

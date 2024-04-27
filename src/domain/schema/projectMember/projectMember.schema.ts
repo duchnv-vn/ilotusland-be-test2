@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { ModelName } from '../../../common/constants';
+import { ModelName } from '../../../common/enum/collection';
 
 export const ProjectMemberSchema = new Schema(
   {
@@ -19,8 +19,10 @@ export const ProjectMemberSchema = new Schema(
 ProjectMemberSchema.index(
   {
     projectId: 1,
+    userId: 1,
   },
   {
     name: 'projectId_2024-04-27',
+    unique: true,
   },
 );

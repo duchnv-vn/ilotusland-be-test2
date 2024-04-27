@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { ModelName } from '../../../common/constants';
+import { ModelName } from '../../../common/enum/collection';
 import { TicketPriority } from '../../enum/ticket-priority';
 
 export const TicketSchema = new Schema(
@@ -14,7 +14,7 @@ export const TicketSchema = new Schema(
       type: Number,
       ref: ModelName.USER,
     },
-    reporter: {
+    reporterId: {
       type: Number,
       ref: ModelName.USER,
     },
@@ -32,11 +32,11 @@ export const TicketSchema = new Schema(
     },
     description: String,
     requestTypeId: {
-      type: String,
+      type: Number,
       ref: ModelName.PROJECT,
     },
     priority: {
-      type: String,
+      type: Number,
       enum: TicketPriority,
     },
     timeTracking: Number,
@@ -54,6 +54,10 @@ export const TicketSchema = new Schema(
     createdBy: {
       type: Number,
       ref: ModelName.USER,
+    },
+    deleteFlag: {
+      type: Number,
+      default: 0,
     },
   },
   {
