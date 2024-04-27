@@ -13,9 +13,11 @@ import { ProjectMemberRepositoryModule } from '../../infrastructure/repositories
 import { ProjectExistsRule } from '../../presentation/decorators/project-id-validate';
 import { TicketExistsRule } from '../../presentation/decorators/ticket-id-validate';
 import { LoggerModule } from '../../infrastructure/logger/logger.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule.register({ timeout: 5000 }),
     LoggerModule,
     TicketRepositoryModule,
     UserRepositoryModule,

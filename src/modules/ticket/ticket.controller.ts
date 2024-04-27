@@ -8,19 +8,23 @@ import {
   Put,
   UseInterceptors,
   Query,
-  InternalServerErrorException,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 import { TicketService } from './ticket.service';
 import {
   UpdateTicketBodyDto,
   UpdateTicketParamsDto,
 } from './dto/update-ticket.dto';
-import { AuthGuard } from '../../presentation/guards/auth.guard';
 import { ResponseInterceptor } from '../../presentation/interceptors/response.interceptor';
 import { FindTicketsByProjectIdQueryDto } from './dto/find-tickets-by-project-id.dto';
 import { LoggerService } from '../../infrastructure/logger/logger.service';
+import { GetUserInfo } from '../../presentation/guards/get-user-info.guard';
+import { Me } from '../../presentation/decorators/me';
+import { User } from '../../domain/schema/user/user.interface';
+import { RequestExceptionEnum } from '../../common/enum/exception';
 
 @Controller('tickets')
 @UseInterceptors(ResponseInterceptor)
@@ -31,23 +35,33 @@ export class TicketController {
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'), GetUserInfo)
   async findByProjectId(
+    @Me() me: User,
     @Query() { projectId }: FindTicketsByProjectIdQueryDto,
     @Res() res: Response,
   ) {
     try {
+      const isAuthorized = await this.ticketService.validateUserInProject(
+        me._id,
+        projectId,
+      );
+      if (!isAuthorized) {
+        throw new UnauthorizedException(
+          RequestExceptionEnum.USER_NOT_IN_PROJECT,
+        );
+      }
+
       const tickets = await this.ticketService.findManyByProjectId(projectId);
       return { tickets };
     } catch (error) {
-      this.logger.log('ticketController.findByProjectId');
-      this.logger.log(error);
-      throw new InternalServerErrorException();
+      this.logger.log('ticketController.findByProjectId', error);
+      throw error;
     }
   }
 
   @Put(':projectId/:ticketId')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'), GetUserInfo)
   async update(
     @Param() { projectId, ticketId }: UpdateTicketParamsDto,
     @Body() updateTicketDto: UpdateTicketBodyDto,
@@ -71,9 +85,8 @@ export class TicketController {
       const result = await this.ticketService.update(ticketId, updateTicketDto);
       return result;
     } catch (error) {
-      this.logger.log('ticketController.update');
-      this.logger.log(error);
-      throw new InternalServerErrorException();
+      this.logger.log('ticketController.update', error);
+      throw error;
     }
   }
 }

@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { MongodbModule } from './infrastructure/database/database.module';
 import { AppExceptionFilter } from './presentation/filters/app-exception.filter';
 import { LOG_LEVEL, MONGODB_URI } from './configs/envs';
 import { LoggerModule } from './infrastructure/logger/logger.module';
-import { AuthGuard } from './presentation/guards/auth.guard';
+import { JWTModule } from './infrastructure/auth/jwt/jwt.module';
 
 @Module({
   imports: [
+    JWTModule,
     LoggerModule.forRoot({
       level: LOG_LEVEL,
     }),
@@ -19,10 +20,6 @@ import { AuthGuard } from './presentation/guards/auth.guard';
     {
       provide: APP_FILTER,
       useClass: AppExceptionFilter,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
     },
   ],
 })
