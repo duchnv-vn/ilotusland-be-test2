@@ -14,7 +14,6 @@ export class UserExistsRule implements ValidatorConstraintInterface {
 
   async validate(value: number) {
     if (!value) return true;
-
     try {
       const user = await this.userRepository.findById(value);
       return !!user;

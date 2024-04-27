@@ -13,6 +13,7 @@ export class CustomerExistsRule implements ValidatorConstraintInterface {
   constructor(private readonly customerRepository: CustomerRepository) {}
 
   async validate(value: number) {
+    if (!value) return true;
     try {
       const customer = await this.customerRepository.findById(value);
       return !!customer;

@@ -13,6 +13,7 @@ export class ProjectExistsRule implements ValidatorConstraintInterface {
   constructor(private readonly projectRepository: ProjectRepository) {}
 
   async validate(value: number) {
+    if (!value) return true;
     try {
       const project = await this.projectRepository.findById(value);
       return !!project;

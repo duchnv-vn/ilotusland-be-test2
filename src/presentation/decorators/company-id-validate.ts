@@ -13,6 +13,7 @@ export class CompanyExistsRule implements ValidatorConstraintInterface {
   constructor(private readonly companyRepository: CompanyRepository) {}
 
   async validate(value: number) {
+    if (!value) return true;
     try {
       const company = await this.companyRepository.findById(value);
       return !!company;

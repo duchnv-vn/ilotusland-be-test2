@@ -13,6 +13,7 @@ export class TicketExistsRule implements ValidatorConstraintInterface {
   constructor(private readonly ticketRepository: TicketRepository) {}
 
   async validate(value: number) {
+    if (!value) return true;
     try {
       const project = await this.ticketRepository.findById(value);
       return !!project;
