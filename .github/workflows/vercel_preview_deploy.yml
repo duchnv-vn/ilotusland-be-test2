@@ -29,5 +29,8 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Install Nest CLI
+        run: npm install --global @nestjs/cli@latest
+
       - name: Deploy preview to Vercel
         run: npm run deploy:preview
