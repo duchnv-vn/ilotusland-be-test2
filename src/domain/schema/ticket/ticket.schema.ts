@@ -50,6 +50,7 @@ export const TicketSchema = new Schema(
           name: String,
           type: String,
           url: String,
+          size: String,
         },
       ],
       default: undefined,
