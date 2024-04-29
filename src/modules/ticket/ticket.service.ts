@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { TicketRepository } from '../../infrastructure/repositories/ticket/ticket.repository';
-import { FindTicketsByProjectBoard } from '../../common/type/ticket.type';
+import {
+  FindTicketsByProjectBoard,
+  FindTicketsByProjectList,
+  FindTicketDetail,
+} from '../../common/type/ticket.type';
 import { ProjectMemberRepository } from '../../infrastructure/repositories/projectMember/projectMember.repository';
 import { ProjectRepository } from '../../infrastructure/repositories/project/project.repository';
 import { RequestExceptionEnum } from '../../common/enum/exception';
 import { Ticket } from '../../domain/schema/ticket/ticket.interface';
+import { TicketListType } from '../../common/enum/ticket';
 
 type ValidateUpdatePayload = {
   asigneeId: number;
@@ -25,11 +30,18 @@ export class TicketService {
 
   async findManyByProjectId(
     projectId: number,
-  ): Promise<FindTicketsByProjectBoard[]> {
-    const data = await this.ticketRepository.findTicketsByProjectBoard(
-      projectId,
-    );
+    listType: number,
+  ): Promise<(FindTicketsByProjectBoard | FindTicketsByProjectList)[]> {
+    const data =
+      TicketListType.kanban === listType
+        ? await this.ticketRepository.findTicketsByProjectBoard(projectId)
+        : await this.ticketRepository.findTicketsByProjectList(projectId);
     return data;
+  }
+
+  async findById(taskId: number): Promise<FindTicketDetail | null> {
+    const data = await this.ticketRepository.findTicketDetail(taskId);
+    return data.length > 0 ? data[0] : null;
   }
 
   async validateUserInProject(

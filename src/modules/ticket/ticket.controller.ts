@@ -21,6 +21,7 @@ import { AuthGuard } from '../../presentation/guards/auth.guard';
 import { ResponseInterceptor } from '../../presentation/interceptors/response.interceptor';
 import { FindTicketsByProjectIdQueryDto } from './dto/find-tickets-by-project-id.dto';
 import { LoggerService } from '../../infrastructure/logger/logger.service';
+import { FindTicketByIdParamsDto } from './dto/find-ticket-by-task-id.dto';
 
 @Controller('tickets')
 @UseInterceptors(ResponseInterceptor)
@@ -33,16 +34,34 @@ export class TicketController {
   @Get()
   @UseGuards(AuthGuard)
   async findByProjectId(
-    @Query() { projectId }: FindTicketsByProjectIdQueryDto,
+    @Query() { projectId, listType = 0 }: FindTicketsByProjectIdQueryDto,
     @Res() res: Response,
   ) {
     try {
-      const tickets = await this.ticketService.findManyByProjectId(projectId);
+      const tickets = await this.ticketService.findManyByProjectId(
+        projectId,
+        listType,
+      );
       return { tickets };
     } catch (error) {
       this.logger.log('ticketController.findByProjectId');
       this.logger.log(error);
       throw new InternalServerErrorException();
+    }
+  }
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  async findOneById(
+    @Param() { id }: FindTicketByIdParamsDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const ticket = await this.ticketService.findById(id);
+      return { ticket };
+    } catch (error) {
+      this.logger.log('ticketController.findOneById', error);
+      throw error;
     }
   }
 

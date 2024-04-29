@@ -8,6 +8,7 @@ import { MongodbModule } from '../../infrastructure/database/database.module';
 import { TicketModule } from './ticket.module';
 import { DATABASE_CONNECTION } from '../../common/constants';
 import { Ticket } from '../../domain/schema/ticket/ticket.interface';
+import { TicketListType } from '../../common/enum/ticket';
 
 describe('TicketController', () => {
   let app: INestApplication;
@@ -45,6 +46,7 @@ describe('TicketController', () => {
 
   it('Should find tickets by project id', async () => {
     const fakeProjectId = 0;
+    const listType = TicketListType.list;
 
     const findManyByProjectIdFunc = jest.spyOn(
       ticketService,
@@ -53,12 +55,15 @@ describe('TicketController', () => {
     findManyByProjectIdFunc.mockImplementationOnce(() => Promise.resolve([]));
 
     const { body } = await request(app.getHttpServer())
-      .get(`/tickets?projectId=${fakeProjectId}`)
+      .get(`/tickets?projectId=${fakeProjectId}&listType=${listType}`)
       .send()
       .expect(200);
 
     expect(findManyByProjectIdFunc).toHaveBeenCalledTimes(1);
-    expect(findManyByProjectIdFunc).toHaveBeenCalledWith(fakeProjectId);
+    expect(findManyByProjectIdFunc).toHaveBeenCalledWith(
+      fakeProjectId,
+      listType,
+    );
   });
 
   it('Should update ticket', async () => {
@@ -94,6 +99,21 @@ describe('TicketController', () => {
 
     expect(updateFunc).toHaveBeenCalledTimes(1);
     expect(updateFunc).toHaveBeenCalledWith(fakeTicketId, fakePayload);
+  });
+
+  it('Should find ticket by id', async () => {
+    const taskId = 0;
+
+    const findByIdFunc = jest.spyOn(ticketService, 'findById');
+    findByIdFunc.mockImplementationOnce(() => Promise.resolve({} as any));
+
+    const { body } = await request(app.getHttpServer())
+      .get(`/tickets/${taskId}`)
+      .send()
+      .expect(200);
+
+    expect(findByIdFunc).toHaveBeenCalledTimes(1);
+    expect(findByIdFunc).toHaveBeenCalledWith(taskId);
   });
 
   afterAll(async () => {
