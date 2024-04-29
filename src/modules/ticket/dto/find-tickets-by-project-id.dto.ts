@@ -1,8 +1,13 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsNotEmpty, Validate } from 'class-validator';
-import { BaseResponseDto } from '../../../common/dto/base.dto';
-import { FindTicketsByProjectBoard } from '../../../common/type/ticket.type';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  Validate,
+} from 'class-validator';
 import { ProjectExistsRule } from '../../../presentation/decorators/project-id-validate';
+import { TicketListType } from '../../../common/enum/ticket';
 
 export class FindTicketsByProjectIdQueryDto {
   @Validate(ProjectExistsRule)
@@ -10,12 +15,10 @@ export class FindTicketsByProjectIdQueryDto {
   @Transform(({ value }) => Number(value))
   @IsNotEmpty()
   projectId: number;
-}
 
-class ResponseData {
-  tickets: FindTicketsByProjectBoard[];
-}
-
-export class FindTicketsByProjectIdResponseDto extends BaseResponseDto {
-  data: ResponseData;
+  @IsInt()
+  @IsEnum(TicketListType)
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  listType?: number;
 }
