@@ -25,6 +25,7 @@ import { GetUserInfo } from '../../presentation/guards/get-user-info.guard';
 import { Me } from '../../presentation/decorators/me';
 import { User } from '../../domain/schema/user/user.interface';
 import { RequestExceptionEnum } from '../../common/enum/exception';
+import { FindTicketByIdParamsDto } from './dto/find-ticket-by-task-id.dto';
 
 @Controller('tickets')
 @UseInterceptors(ResponseInterceptor)
@@ -38,7 +39,7 @@ export class TicketController {
   @UseGuards(AuthGuard('jwt'), GetUserInfo)
   async findByProjectId(
     @Me() me: User,
-    @Query() { projectId }: FindTicketsByProjectIdQueryDto,
+    @Query() { projectId, listType = 0 }: FindTicketsByProjectIdQueryDto,
     @Res() res: Response,
   ) {
     try {
@@ -52,7 +53,10 @@ export class TicketController {
         );
       }
 
-      const tickets = await this.ticketService.findManyByProjectId(projectId);
+      const tickets = await this.ticketService.findManyByProjectId(
+        projectId,
+        listType,
+      );
       return { tickets };
     } catch (error) {
       this.logger.log('ticketController.findByProjectId', error);
@@ -60,9 +64,26 @@ export class TicketController {
     }
   }
 
+  @Get(':id')
+  @UseGuards(AuthGuard('jwt'), GetUserInfo)
+  async findOneById(
+    @Me() me: User,
+    @Param() { id }: FindTicketByIdParamsDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const ticket = await this.ticketService.findById(id);
+      return { ticket };
+    } catch (error) {
+      this.logger.log('ticketController.findOneById', error);
+      throw error;
+    }
+  }
+
   @Put(':projectId/:ticketId')
   @UseGuards(AuthGuard('jwt'), GetUserInfo)
   async update(
+    @Me() me: User,
     @Param() { projectId, ticketId }: UpdateTicketParamsDto,
     @Body() updateTicketDto: UpdateTicketBodyDto,
     @Res() res: Response,

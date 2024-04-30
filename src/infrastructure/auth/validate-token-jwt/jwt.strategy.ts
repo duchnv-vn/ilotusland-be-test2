@@ -9,7 +9,10 @@ import {
 } from '../../../configs/envs';
 
 @Injectable()
-export class ValidateTokenJwtStrategy extends PassportStrategy(Strategy) {
+export class ValidateTokenJwtStrategy extends PassportStrategy(
+  Strategy,
+  'jwt',
+) {
   constructor() {
     super({
       secretOrKeyProvider: passportJwtSecret({

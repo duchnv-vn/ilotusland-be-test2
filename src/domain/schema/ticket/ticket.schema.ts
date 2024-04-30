@@ -39,7 +39,10 @@ export const TicketSchema = new Schema(
       type: Number,
       enum: TicketPriority,
     },
-    timeTracking: Number,
+    timeTracking: {
+      type: Number,
+      default: 0,
+    },
     dueDate: Number,
     attachedFiles: {
       type: [

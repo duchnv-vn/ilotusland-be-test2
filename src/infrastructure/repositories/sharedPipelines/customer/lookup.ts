@@ -15,7 +15,7 @@ export const lookupCustomerPipelineBuilder = (
   const pipeline: PipelineStage[] = [
     {
       $lookup: {
-        from: CollectionName.COMPANY,
+        from: CollectionName.CUSTOMER,
         as: propName,
         foreignField,
         localField,

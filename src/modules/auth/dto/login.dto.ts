@@ -7,5 +7,5 @@ export class LoginBodyDto {
 
   @IsString()
   @IsNotEmpty()
-  hashPassword: string;
+  password: string;
 }

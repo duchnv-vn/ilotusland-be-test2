@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { TicketService } from './ticket.service';
 import { TicketController } from './ticket.controller';
 import { TicketRepositoryModule } from '../../infrastructure/repositories/ticket/ticket.module';
@@ -13,7 +14,6 @@ import { ProjectMemberRepositoryModule } from '../../infrastructure/repositories
 import { ProjectExistsRule } from '../../presentation/decorators/project-id-validate';
 import { TicketExistsRule } from '../../presentation/decorators/ticket-id-validate';
 import { LoggerModule } from '../../infrastructure/logger/logger.module';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [

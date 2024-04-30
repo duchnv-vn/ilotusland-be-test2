@@ -15,7 +15,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js','dist'],
+  ignorePatterns: ['.eslintrc.js', 'dist'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -30,5 +30,6 @@ module.exports = {
         args: 'none',
       },
     ],
+    '@typescript-eslint/no-empty-function': 'off'
   },
 };
