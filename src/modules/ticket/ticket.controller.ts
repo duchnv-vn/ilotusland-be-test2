@@ -26,6 +26,7 @@ import { Me } from '../../presentation/decorators/me';
 import { User } from '../../domain/schema/user/user.interface';
 import { RequestExceptionEnum } from '../../common/enum/exception';
 import { FindTicketByIdParamsDto } from './dto/find-ticket-by-task-id.dto';
+import { UserIsProjectMemberRule } from '../../presentation/guards/user-is-project-member.guard';
 
 @Controller('tickets')
 @UseInterceptors(ResponseInterceptor)
@@ -36,11 +37,11 @@ export class TicketController {
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'), GetUserInfo)
+  @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async findByProjectId(
     @Me() me: User,
     @Query() { projectId, listType = 0 }: FindTicketsByProjectIdQueryDto,
-    @Res() res: Response,
+    @Res() _res: Response,
   ) {
     try {
       const isAuthorized = await this.ticketService.validateUserInProject(
@@ -64,15 +65,14 @@ export class TicketController {
     }
   }
 
-  @Get(':id')
-  @UseGuards(AuthGuard('jwt'), GetUserInfo)
+  @Get(':projectId/:ticketId')
+  @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async findOneById(
-    @Me() me: User,
-    @Param() { id }: FindTicketByIdParamsDto,
-    @Res() res: Response,
+    @Param() { ticketId }: FindTicketByIdParamsDto,
+    @Res() _res: Response,
   ) {
     try {
-      const ticket = await this.ticketService.findById(id);
+      const ticket = await this.ticketService.findById(ticketId);
       return { ticket };
     } catch (error) {
       this.logger.log('ticketController.findOneById', error);
@@ -81,12 +81,11 @@ export class TicketController {
   }
 
   @Put(':projectId/:ticketId')
-  @UseGuards(AuthGuard('jwt'), GetUserInfo)
+  @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async update(
-    @Me() me: User,
     @Param() { projectId, ticketId }: UpdateTicketParamsDto,
     @Body() updateTicketDto: UpdateTicketBodyDto,
-    @Res() res: Response,
+    @Res() _res: Response,
   ) {
     const { asigneeId, reporterId, requestTypeId, stageId } = updateTicketDto;
 
