@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { AuthGuard, IAuthGuard } from '@nestjs/passport';
 import { TicketService } from './ticket.service';
 import { LoggerModule } from '../../infrastructure/logger/logger.module';
 import { LOG_LEVEL, MONGODB_URI } from '../../configs/envs';
@@ -9,15 +10,24 @@ import { TicketModule } from './ticket.module';
 import { DATABASE_CONNECTION } from '../../common/constants';
 import { Ticket } from '../../domain/schema/ticket/ticket.interface';
 import { TicketListType } from '../../common/enum/ticket';
+import { ValidateTokenJWTModule } from '../../infrastructure/auth/validate-token-jwt/jwt.module';
 
 describe('TicketController', () => {
   let app: INestApplication;
   let conn: any;
+  let guard: IAuthGuard;
   let ticketService: TicketService;
+
+  const userAccountCI = {
+    _id: 0,
+    name: 'testuser',
+    email: 'testuser@gmail.com ',
+  };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        ValidateTokenJWTModule,
         LoggerModule.forRoot({
           level: LOG_LEVEL,
         }),
@@ -38,6 +48,17 @@ describe('TicketController', () => {
 
     conn = module.get<any>(DATABASE_CONNECTION);
     ticketService = module.get<TicketService>(TicketService);
+    guard = module.get<IAuthGuard>(AuthGuard);
+  });
+
+  beforeEach(() => {
+    const ca = jest.spyOn(guard, 'canActivate');
+
+    ca.mockImplementation((context) => {
+      const req = context.switchToHttp().getRequest();
+      req.user = userAccountCI;
+      return Promise.resolve(true);
+    });
   });
 
   afterEach(() => {
@@ -103,12 +124,13 @@ describe('TicketController', () => {
 
   it('Should find ticket by id', async () => {
     const taskId = 0;
+    const fakeProjectId = 0;
 
     const findByIdFunc = jest.spyOn(ticketService, 'findById');
     findByIdFunc.mockImplementationOnce(() => Promise.resolve({} as any));
 
     const { body } = await request(app.getHttpServer())
-      .get(`/tickets/${taskId}`)
+      .get(`/tickets/${fakeProjectId}/${taskId}`)
       .send()
       .expect(200);
 

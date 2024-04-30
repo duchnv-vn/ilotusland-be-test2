@@ -8,20 +8,21 @@ import {
   Put,
   UseInterceptors,
   Query,
-  InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 import { TicketService } from './ticket.service';
 import {
   UpdateTicketBodyDto,
   UpdateTicketParamsDto,
 } from './dto/update-ticket.dto';
-import { AuthGuard } from '../../presentation/guards/auth.guard';
 import { ResponseInterceptor } from '../../presentation/interceptors/response.interceptor';
 import { FindTicketsByProjectIdQueryDto } from './dto/find-tickets-by-project-id.dto';
 import { LoggerService } from '../../infrastructure/logger/logger.service';
+import { GetUserInfo } from '../../presentation/guards/get-user-info.guard';
 import { FindTicketByIdParamsDto } from './dto/find-ticket-by-task-id.dto';
+import { UserIsProjectMemberRule } from '../../presentation/guards/user-is-project-member.guard';
 
 @Controller('tickets')
 @UseInterceptors(ResponseInterceptor)
@@ -32,10 +33,10 @@ export class TicketController {
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async findByProjectId(
     @Query() { projectId, listType = 0 }: FindTicketsByProjectIdQueryDto,
-    @Res() res: Response,
+    @Res() _res: Response,
   ) {
     try {
       const tickets = await this.ticketService.findManyByProjectId(
@@ -44,20 +45,19 @@ export class TicketController {
       );
       return { tickets };
     } catch (error) {
-      this.logger.log('ticketController.findByProjectId');
-      this.logger.log(error);
-      throw new InternalServerErrorException();
+      this.logger.log('ticketController.findByProjectId', error);
+      throw error;
     }
   }
 
-  @Get(':id')
-  @UseGuards(AuthGuard)
+  @Get(':projectId/:ticketId')
+  @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async findOneById(
-    @Param() { id }: FindTicketByIdParamsDto,
-    @Res() res: Response,
+    @Param() { ticketId }: FindTicketByIdParamsDto,
+    @Res() _res: Response,
   ) {
     try {
-      const ticket = await this.ticketService.findById(id);
+      const ticket = await this.ticketService.findById(ticketId);
       return { ticket };
     } catch (error) {
       this.logger.log('ticketController.findOneById', error);
@@ -66,11 +66,11 @@ export class TicketController {
   }
 
   @Put(':projectId/:ticketId')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async update(
     @Param() { projectId, ticketId }: UpdateTicketParamsDto,
     @Body() updateTicketDto: UpdateTicketBodyDto,
-    @Res() res: Response,
+    @Res() _res: Response,
   ) {
     const { asigneeId, reporterId, requestTypeId, stageId } = updateTicketDto;
 
@@ -90,9 +90,8 @@ export class TicketController {
       const result = await this.ticketService.update(ticketId, updateTicketDto);
       return result;
     } catch (error) {
-      this.logger.log('ticketController.update');
-      this.logger.log(error);
-      throw new InternalServerErrorException();
+      this.logger.log('ticketController.update', error);
+      throw error;
     }
   }
 }

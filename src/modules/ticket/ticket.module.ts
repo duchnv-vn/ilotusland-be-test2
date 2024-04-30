@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { TicketService } from './ticket.service';
 import { TicketController } from './ticket.controller';
 import { TicketRepositoryModule } from '../../infrastructure/repositories/ticket/ticket.module';
@@ -16,6 +17,7 @@ import { LoggerModule } from '../../infrastructure/logger/logger.module';
 
 @Module({
   imports: [
+    HttpModule.register({ timeout: 5000 }),
     LoggerModule,
     TicketRepositoryModule,
     UserRepositoryModule,

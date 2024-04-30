@@ -18,4 +18,7 @@ vercel --prod \
     ./dist \
     -A "vercel.json" \
     -e MONGODB_URI=$MONGODB_URI \
+    -e AUTH0_AUDIENCE=$AUTH0_AUDIENCE \
+    -e AUTH0_ISSUER_URL=$AUTH0_ISSUER_URL \
+    -e AUTH0_TOKEN_SIGN_ALG=$AUTH0_TOKEN_SIGN_ALG \
     -t "$VERCEL_TOKEN"

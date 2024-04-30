@@ -9,6 +9,10 @@ export class BaseRepository<M extends IBaseSchemaCommon>
 
   constructor(protected model: Model<M>) {}
 
+  async count(): Promise<number> {
+    return this.model.countDocuments();
+  }
+
   async find(): Promise<Array<HydratedDocument<M>>> {
     return this.model.find({});
   }
