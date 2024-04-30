@@ -9,7 +9,6 @@ import {
   UseInterceptors,
   Query,
   BadRequestException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -22,9 +21,6 @@ import { ResponseInterceptor } from '../../presentation/interceptors/response.in
 import { FindTicketsByProjectIdQueryDto } from './dto/find-tickets-by-project-id.dto';
 import { LoggerService } from '../../infrastructure/logger/logger.service';
 import { GetUserInfo } from '../../presentation/guards/get-user-info.guard';
-import { Me } from '../../presentation/decorators/me';
-import { User } from '../../domain/schema/user/user.interface';
-import { RequestExceptionEnum } from '../../common/enum/exception';
 import { FindTicketByIdParamsDto } from './dto/find-ticket-by-task-id.dto';
 import { UserIsProjectMemberRule } from '../../presentation/guards/user-is-project-member.guard';
 
@@ -39,21 +35,10 @@ export class TicketController {
   @Get()
   @UseGuards(AuthGuard('jwt'), GetUserInfo, UserIsProjectMemberRule)
   async findByProjectId(
-    @Me() me: User,
     @Query() { projectId, listType = 0 }: FindTicketsByProjectIdQueryDto,
     @Res() _res: Response,
   ) {
     try {
-      const isAuthorized = await this.ticketService.validateUserInProject(
-        me._id,
-        projectId,
-      );
-      if (!isAuthorized) {
-        throw new UnauthorizedException(
-          RequestExceptionEnum.USER_NOT_IN_PROJECT,
-        );
-      }
-
       const tickets = await this.ticketService.findManyByProjectId(
         projectId,
         listType,
